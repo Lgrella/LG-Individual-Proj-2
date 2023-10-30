@@ -39,13 +39,4 @@ jobs:
       run: make delete
     - name: Test
       run: make test
-    - name: Archive Binary
-      uses: actions/upload-artifact@v2
-      with:
-        name: optimized-binary
-        path: target/release/LG_sqlite
-    - name: pull repository
-      run: git pull
-    - name: add rust logs
-      run: make generate_and_push
     
