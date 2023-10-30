@@ -1,4 +1,4 @@
-use LG_sqlite::{extract, query, transform_load};
+use lg_sqlite::{extract, query, transform_load};
 use std::env;
 
 fn main() {

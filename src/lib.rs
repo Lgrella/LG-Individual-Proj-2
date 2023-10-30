@@ -17,7 +17,7 @@ fn log_query(query: &str, log_file: &str) {
 }
 
 pub fn extract(url: &str, file_path: &str, directory: &str) {
-    if !fs::metadata(directory).is_ok() {
+    if fs::metadata(directory).is_err() {
         fs::create_dir_all(directory).expect("Failed to create directory");
     }
 
@@ -42,7 +42,7 @@ pub fn transform_load(dataset: &str) -> Result<String> {
             beer_servings INTEGER,
             spirit_servings INTEGER,
             wine_servings INTEGER,
-            total_liters INTEGER
+            total_liters FLOAT
         )",
         [],
     )?;
@@ -63,9 +63,7 @@ pub fn transform_load(dataset: &str) -> Result<String> {
     for result in rdr.records() {
         match result {
             Ok(record) => {
-                stmt.execute(&[
-                    &record[0], &record[1], &record[2], &record[3], &record[4],
-                ])?;
+                stmt.execute([&record[0], &record[1], &record[2], &record[3], &record[4]])?;
             }
             Err(err) => {
                 eprintln!("Error reading CSV record: {:?}", err);
@@ -88,20 +86,13 @@ pub fn query(query: &str) -> Result<()> {
                 row.get::<usize, i32>(2)?,
                 row.get::<usize, i32>(3)?,
                 row.get::<usize, i32>(4)?,
-                row.get::<usize, i32>(5)?,
+                row.get::<usize, f32>(5)?,
             ))
         })?;
 
         for result in results {
             match result {
-                Ok((
-                    id,
-                    country,
-                    beer_servings,
-                    spirit_servings,
-                    wine_servings,
-                    total_liters,
-                )) => {
+                Ok((id, country, beer_servings, spirit_servings, wine_servings, total_liters)) => {
                     println!(
                         "Result: id={}, country={}, beer_servings={}, spirit_servings={}, wine_servings={}, total_liters={}",
                         id, country, beer_servings, spirit_servings, wine_servings, total_liters
@@ -112,7 +103,7 @@ pub fn query(query: &str) -> Result<()> {
         }
     } else {
         // other CRUD operations
-        let _num_affected_rows = conn.execute_batch(query)?;
+        conn.execute_batch(query)?;
     }
     log_query(query, LOG_FILE);
     Ok(())
