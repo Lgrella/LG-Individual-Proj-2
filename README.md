@@ -3,6 +3,8 @@ This project performs ETL operations using rust on a sqlite database. I used git
 
 ## Youtube Link:
 
+https://www.youtube.com/watch?v=Bqp6jhXpWPc
+
 ## Process:
 1. First, I extract the data from github's dataset page and create a csv in the data folder.
      * The `extract` function performs this operation
