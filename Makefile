@@ -18,6 +18,9 @@ test:
 run:
 	cargo run
 
+install:
+	#install if needed
+
 release:
 	cargo build --release
 
