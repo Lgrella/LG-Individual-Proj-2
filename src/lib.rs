@@ -31,19 +31,18 @@ pub fn extract(url: &str, file_path: &str, directory: &str) {
 }
 
 pub fn transform_load(dataset: &str) -> Result<String> {
-    let conn = Connection::open("employeeDB.db")?;
+    let conn = Connection::open("alcbycountry.db")?;
 
-    conn.execute("DROP TABLE IF EXISTS employeeDB", [])?;
+    conn.execute("DROP TABLE IF EXISTS alcbycountry", [])?;
 
     conn.execute(
-        "CREATE TABLE employeeDB (
+        "CREATE TABLE alcbycountry (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            employee TEXT,
-            position TEXT,
-            salary INTEGER,
-            fulltime INTEGER,
-            startdate TEXT,
-            storenum INTEGER
+            country TEXT,
+            beer_servings INTEGER,
+            spirit_servings INTEGER,
+            wine_servings INTEGER,
+            total_liters INTEGER
         )",
         [],
     )?;
@@ -51,22 +50,21 @@ pub fn transform_load(dataset: &str) -> Result<String> {
     let mut rdr = csv::Reader::from_path(dataset).expect("Failed to read dataset");
 
     let mut stmt = conn.prepare(
-        "INSERT INTO employeeDB (
-            employee, 
-            position, 
-            salary, 
-            fulltime, 
-            startdate, 
-            storenum
+        "INSERT INTO alcbycountry (
+            country, 
+            beer_servings, 
+            spirit_servings, 
+            wine_servings, 
+            total_liters
         ) 
-        VALUES (?, ?, ?, ?, ?, ?)",
+        VALUES (?, ?, ?, ?, ?)",
     )?;
 
     for result in rdr.records() {
         match result {
             Ok(record) => {
                 stmt.execute(&[
-                    &record[0], &record[1], &record[2], &record[3], &record[4], &record[5],
+                    &record[0], &record[1], &record[2], &record[3], &record[4],
                 ])?;
             }
             Err(err) => {
@@ -75,11 +73,11 @@ pub fn transform_load(dataset: &str) -> Result<String> {
         }
     }
 
-    Ok("employeeDB.db".to_string())
+    Ok("alcbycountry.db".to_string())
 }
 
 pub fn query(query: &str) -> Result<()> {
-    let conn = Connection::open("employeeDB.db")?;
+    let conn = Connection::open("alcbycountry.db")?;
     // Read operation
     if query.trim().to_lowercase().starts_with("select") {
         let mut stmt = conn.prepare(query)?;
@@ -87,11 +85,10 @@ pub fn query(query: &str) -> Result<()> {
             Ok((
                 row.get::<usize, i32>(0)?,
                 row.get::<usize, String>(1)?,
-                row.get::<usize, String>(2)?,
+                row.get::<usize, i32>(2)?,
                 row.get::<usize, i32>(3)?,
                 row.get::<usize, i32>(4)?,
-                row.get::<usize, String>(5)?,
-                row.get::<usize, i32>(6)?,
+                row.get::<usize, i32>(5)?,
             ))
         })?;
 
@@ -99,16 +96,15 @@ pub fn query(query: &str) -> Result<()> {
             match result {
                 Ok((
                     id,
-                    employee,
-                    position,
-                    salary,
-                    fulltime,
-                    startdate,
-                    storenum,
+                    country,
+                    beer_servings,
+                    spirit_servings,
+                    wine_servings,
+                    total_liters,
                 )) => {
                     println!(
-                        "Result: id={}, employee={}, position={}, salary={}, fulltime={}, startdate={}, storenum={}",
-                        id, employee, position, salary, fulltime, startdate, storenum
+                        "Result: id={}, country={}, beer_servings={}, spirit_servings={}, wine_servings={}, total_liters={}",
+                        id, country, beer_servings, spirit_servings, wine_servings, total_liters
                     );
                 }
                 Err(e) => eprintln!("Error in row: {:?}", e),
