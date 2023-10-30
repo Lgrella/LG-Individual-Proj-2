@@ -12,11 +12,12 @@ fn main() {
     match action.as_str() {
         "extract" => {
             extract(
-                "data/serve_times.csv",
+                "https://github.com/datasets/five-thirty-eight-datasets/blob/master/datasets/alcohol-consumption/data/drinks.csv?raw=true",
+                "data/drinks.csv",
                 "data",
             );
         }
-        "transform_load" => match transform_load("data/serve_times.csv") {
+        "transform_load" => match transform_load("data/drinks.csv") {
             Ok(_) => println!("Data loaded successfully!"),
             Err(err) => eprintln!("Error: {:?}", err),
         },
