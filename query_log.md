@@ -18,3 +18,23 @@ UPDATE alcbycountry SET country='Afghanistan', beer_servings=100, spirit_serving
 SELECT * from alcbycountry
 ```
 
+```sql
+INSERT INTO alcbycountry (country, beer_servings, spirit_servings, wine_servings, total_liters) VALUES ('TEST', 10, 20, 0, 15);
+```
+
+```sql
+UPDATE alcbycountry SET country='Afghanistan', beer_servings=100, spirit_servings=30, wine_servings = 1, total_liters=15 WHERE id=1;
+```
+
+```sql
+SELECT * FROM alcbycountry WHERE country = 'belize';
+```
+
+```sql
+DELETE FROM alcbycountry WHERE id=3;
+```
+
+```sql
+select * from alcbycountry limit 5
+```
+
